@@ -1,32 +1,46 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import SignUp from './pages/SignUp';
-import Login from './pages/Login';
-import Welcome from './pages/Welcome';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import VenueDetails from './pages/VenueDetails';
+import TurfList from './pages/TurfList';
+import TurfDetail from './pages/TurfDetail';
 import Booking from './pages/Booking';
-import PaymentConfirmation from './pages/PaymentConfirmation';
+import UserProfile from './pages/UserProfile';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import { isAuthenticated } from './utils/auth';
+
+const ProtectedRoute = ({ children }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow">
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <main className="container mx-auto px-4 py-8">
           <Routes>
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/welcome" element={<Welcome />} />
             <Route path="/" element={<Home />} />
-            <Route path="/venue/:id" element={<VenueDetails />} />
-            <Route path="/booking/:id" element={<Booking />} />
-            <Route path="/confirmation" element={<PaymentConfirmation />} />
+            <Route path="/turfs" element={<TurfList />} />
+            <Route path="/turf/:id" element={<TurfDetail />} />
+            <Route path="/booking/:id" element={
+              <ProtectedRoute>
+                <Booking />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
         </main>
-        <Footer />
       </div>
     </Router>
   );
