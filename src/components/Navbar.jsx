@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { isAuthenticated, logout, getCurrentUser } from '../utils/auth';
 import { Menu, X, User, LogOut, Home, Calendar, LogIn, Dribbble } from 'lucide-react';
+import { isAdmin } from '../utils/auth';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -27,11 +28,10 @@ const Navbar = () => {
   const NavItem = ({ to, icon: Icon, children }) => (
     <Link
       to={to}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-        location.pathname === to
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${location.pathname === to
           ? 'bg-blue-600 text-white'
           : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
-      }`}
+        }`}
     >
       <Icon size={18} />
       <span>{children}</span>
@@ -40,11 +40,10 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed w-full top-0 z-50 transition-all duration-300 ${scrolled
           ? 'bg-white/80 backdrop-blur-lg shadow-md'
           : 'bg-white'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -62,6 +61,14 @@ const Navbar = () => {
           <div className="hidden md:flex md:items-center md:space-x-4">
             <NavItem to="/" icon={Home}>Home</NavItem>
             <NavItem to="/turfs" icon={Dribbble}>Turfs</NavItem>
+            {isAuthenticated() && isAdmin() && (
+              <Link
+                to="/admin"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Admin Dashboard
+              </Link>
+            )}
             {authenticated ? (
               <>
                 <NavItem to="/profile" icon={User}>Profile</NavItem>
@@ -103,9 +110,8 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       <div
-        className={`md:hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-        } overflow-hidden bg-white border-t`}
+        className={`md:hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          } overflow-hidden bg-white border-t`}
       >
         <div className="px-4 pt-2 pb-3 space-y-1">
           <MobileNavItem to="/" icon={Home} onClick={() => setIsOpen(false)}>
@@ -153,11 +159,10 @@ const MobileNavItem = ({ to, icon: Icon, onClick, children }) => {
   return (
     <Link
       to={to}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-300 ${
-        isActive
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-300 ${isActive
           ? 'bg-blue-50 text-blue-600'
           : 'text-gray-700 hover:bg-gray-50'
-      }`}
+        }`}
       onClick={onClick}
     >
       <Icon size={18} />
